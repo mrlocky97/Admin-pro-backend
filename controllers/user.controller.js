@@ -5,12 +5,20 @@ const User = require('../models/User.model');
 const { generateJWT } = require('../helpers/jwt');
 
 const getUsers = async (req, res) => {
-    // seleccion de campos de un registro de mongo
-    const users = await User.find({}, 'name email role google');
+    const to = Number(req.query.to) || 0;
+
+    const [users, totalUsers] = await Promise.all([ // ejecuta todas las promesas
+        User.find({}, 'name email role google image')// seleccion de campos de un registro de mongo
+            .skip(to)//paginacion
+            .limit(5),
+        User.countDocuments()
+    ]);
+
     res.json({
         ok: true,
+        total: totalUsers,
         msg: 'Get all users.',
-        users,
+        users: users,
         uid: req.uid // lo trae del middleware y sirve para compartir uno en las peticiones
     });
 }

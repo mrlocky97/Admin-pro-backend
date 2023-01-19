@@ -15,7 +15,11 @@ app.use(express.json());
 
 //rutas
 app.use('/api/users', require('./routes/user.routes'));
+app.use('/api/hospital', require('./routes/hospital.routes'));
+app.use('/api/doctors', require('./routes/doctor.routes'));
 app.use('/api/login', require('./routes/auth.routes'));
+app.use('/api/search', require('./routes/Search.routes'));
+app.use('/api/upload', require('./routes/upload.routes'));
 
 
 app.listen(process.env.PORT, () => {
