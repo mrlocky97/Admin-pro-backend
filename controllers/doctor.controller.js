@@ -39,17 +39,55 @@ const createDoctor = async (req, res = response) => {
 }
 
 const updateDoctor = async (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'updateDoctor',
-    });
+    const doctorId = req.params.id;
+    try {
+        doctorDB = await Doctor.findById(doctorId);
+        if (!doctorDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error doctor not found.'
+            })
+        }
+        const doctorUpdate = {
+            ...req.body
+        }
+        const newDoctorUpdate = await Doctor.findByIdAndUpdate(doctorId, doctorUpdate, {new: true});
+        res.json({
+            ok: true,
+            msg: 'Successful update doctor.',
+            newDoctorUpdate
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: 'Error insternal serve.',
+            err: error
+        })
+    }
 }
 
 const deleteDoctor = async (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'deleteDoctor',
-    });
+    const doctorId = req.params.id;
+    try {
+        const doctorDB = await Doctor.findById(doctorId);
+        if (!doctorDB){
+            return res.status(404).json({
+                ok: false,
+                msg: "Error: Doctor not found."
+            });
+        }
+        await Doctor.findByIdAndDelete(doctorId);
+        res.json({
+            ok: true,
+            msg: 'Doctor successfully deleted.',
+        });
+    } catch (error) {
+        res.json({
+            ok: false,
+            msg: 'Error: internal server error.',
+            err: error
+        });
+    }
 }
 
 module.exports = {

@@ -38,17 +38,58 @@ const createHospital = async (req, res = response) => {
 }
 
 const updateHospital = async (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'updateHospital',
-    });
+    const hopitalId = req.params.id;
+    try {  
+        const hopitalDB = await Hospital.findById(hopitalId);
+        if (!hopitalDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Hopital not found.'
+            });
+        }
+        // cuando se actualizan varias columnas del objeto
+        const updateHospital = {
+            ...req.body,
+        }
+        //{new: true} regresa el documento actualizado
+        const newHopitalUpdate = await Hospital.findByIdAndUpdate(hopitalId, updateHospital, { new: true});
+        res.json({
+            ok: true,
+            msg: 'updateHospital',
+            newUpdateHospital: newHopitalUpdate
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: 'Fatal internal error server.',
+            err: error
+        });
+    }
+ 
 }
 
 const deleteHospital = async (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'deleteHospital',
-    });
+    const hospitalId = req.params.id;
+    try {
+        const hospitalDB = Hospital.findById(hospitalId);
+        if (!hospitalDB){
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error: Hospital not found'
+            });
+        }
+        await Hospital.findByIdAndDelete(hospitalId);
+        res.json({
+            ok: true,
+            msg: 'Hospital successfully deleted.',
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok:false,
+            msg: 'Error internar server error.',
+            err: error
+        })
+    }
 }
 
 module.exports = {
